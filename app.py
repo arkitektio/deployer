@@ -1,19 +1,15 @@
-import asyncio
 import datetime
 import os
 import random
 import time
 from dataclasses import dataclass, field
-from typing import AsyncGenerator, Dict, List
-import xarray as xr
-import numpy as np
+from typing import  Dict, List
 from docker import DockerClient, from_env
 import docker.types
-from arkitekt_next import background, context, easy, register, startup
+from arkitekt_next import background, context, easy, register, startup, progress, log
 from kabinet.api.schema import (
     Backend,
     Definition,
-    Deployment,
     Flavour,
     Pod,
     PodStatus,
@@ -23,8 +19,6 @@ from kabinet.api.schema import (
     CudaSelector,
     update_pod,
     adeclare_backend,
-    adump_logs,
-    aupdate_pod,
     create_deployment,
     dump_logs,
     create_pod,
@@ -32,15 +26,8 @@ from kabinet.api.schema import (
     get_flavour,
     adeclare_resource,
 )
-from mikro_next.api.schema import Image, from_array_like
-from rekuest_next.actors.reactive.api import (
-    progress,
-    log,
-    useInstanceID,
-)
-from api.kabinet import aget_detail_definition, get_detail_definition
+from api.kabinet import  get_detail_definition
 from unlok_next.api.schema import (
-    DevelopmentClientInput,
     ManifestInput,
     Requirement,
     create_client,
@@ -53,11 +40,9 @@ ARKITEKT_GATEWAY = os.getenv("ARKITEKT_GATEWAY", "caddy")
 ARKITEKT_NETWORK = os.getenv("ARKITEKT_NETWORK", "next_default")
 
 
+def _docker_params_from_flavour(flavour: ListFlavour) -> Dict[str, List[docker.types.DeviceRequest]]:
 
-
-def _docker_params_from_flavour(flavour: ListFlavour) -> Dict[str, str]:
-    
-    docker_params = {}
+    docker_params: Dict[str, List[docker.types.DeviceRequest]] = {}
 
     for selector in flavour.selectors:
 
@@ -83,7 +68,7 @@ class ArkitektContext:
 
 
 @startup
-async def on_startup(instance_id) -> ArkitektContext:
+async def on_startup(instance_id: str) -> ArkitektContext:
     """ A startup function that runs when the actor starts up."""
     print("Starting up")
     print("Check sfosr scontainers that are no longer pods?")
@@ -110,7 +95,7 @@ async def on_startup(instance_id) -> ArkitektContext:
 
 
 @background
-def container_checker(context: ArkitektContext):
+def container_checker(context: ArkitektContext) -> None:
     """ A background function that runs in the background.
 
     It checks for containers that are no longer pods and updates their status.
@@ -162,7 +147,7 @@ def container_checker(context: ArkitektContext):
         time.sleep(10)
 
 
-@register(name="Refresh Logs")
+@register
 def refresh_logs(context: ArkitektContext, pod: Pod) -> Pod:
     """ Refresh Logs
 
@@ -195,7 +180,7 @@ def refresh_logs(context: ArkitektContext, pod: Pod) -> Pod:
     return pod
 
 
-@register(name="Restart")
+@register
 def restart(pod: Pod, context: ArkitektContext) -> Pod:
     """Restart
 
@@ -213,7 +198,7 @@ def restart(pod: Pod, context: ArkitektContext) -> Pod:
     return pod
 
 
-@register(name="Stop")
+@register
 def stop(pod: Pod, context: ArkitektContext) -> Pod:
     """Stop
 
@@ -230,7 +215,7 @@ def stop(pod: Pod, context: ArkitektContext) -> Pod:
     return pod
 
 
-@register(name="Remove")
+@register
 def remove(pod: Pod, context: ArkitektContext) -> Pod:
     """Remove
 
@@ -254,7 +239,7 @@ def remove(pod: Pod, context: ArkitektContext) -> Pod:
     return pod
 
 
-@register(name="Deploy Flavour")
+@register
 def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
     """Deploy Flavour
 
@@ -324,7 +309,7 @@ def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
 
     deployment = create_deployment(
         flavour=flavour,
-        instance_id=useInstanceID(),
+        instance_id=context.instance_id,
         local_id=flavour.image.image_string,
         last_pulled=datetime.datetime.now(),
     )
@@ -369,7 +354,7 @@ def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
 
     z = create_pod(
         deployment=deployment,
-        instance_id=useInstanceID(),
+        instance_id=context.instance_id,
         local_id=container.id,
         client_id=client.oauth2_client.client_id,
         resource=resource,
@@ -378,7 +363,7 @@ def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
     return z
 
 
-@register(name="Deploy")
+@register
 def deploy(release: Release, context: ArkitektContext) -> Pod:
     """Deploy
 
@@ -469,7 +454,7 @@ def deploy(release: Release, context: ArkitektContext) -> Pod:
 
     deployment = create_deployment(
         flavour=flavour,
-        instance_id=useInstanceID(),
+        instance_id=context.instance_id,
         local_id=flavour.image.image_string,
         last_pulled=datetime.datetime.now(),
     )
@@ -514,7 +499,7 @@ def deploy(release: Release, context: ArkitektContext) -> Pod:
 
     z = create_pod(
         deployment=deployment,
-        instance_id=useInstanceID(),
+        instance_id=context.instance_id,
         local_id=container.id,
         client_id=client.oauth2_client.client_id,
         resource=resource,
@@ -524,7 +509,7 @@ def deploy(release: Release, context: ArkitektContext) -> Pod:
 
 
 
-@register(name="Deploy Definition")
+@register
 def deploy_definition(definition: Definition, context: ArkitektContext) -> Pod:
     """Deploy
 
@@ -559,7 +544,3 @@ def deploy_definition(definition: Definition, context: ArkitektContext) -> Pod:
 
 
 
-
-if __name__ == "__main__":
-    with easy("docker") as e:
-        e.services.get("rekuest").run()

@@ -32,6 +32,7 @@ from unlok_next.api.schema import (
     Requirement,
     create_client,
 )
+import rekuest_next
 
 # Connect to local Dockers
 

@@ -18,6 +18,10 @@ from kabinet.api.schema import (
     ListFlavour,
     CudaSelector,
     update_pod,
+    list_flavours,
+    FlavourFilter,
+    FlavourOrder,
+    Ordering,
     adeclare_backend,
     create_deployment,
     dump_logs,
@@ -240,6 +244,29 @@ def remove(pod: Pod, context: ArkitektContext) -> Pod:
     return pod
 
 
+@register 
+def auto_install(context: ArkitektContext, definition: Definition) -> Pod:
+    flavours = list_flavours(
+        filters=FlavourFilter(hasDefinitions=[definition.id]),
+        order=FlavourOrder(releasedAt=Ordering.DESC),
+    )
+
+    if not flavours:
+        print("No flavours found for definition", definition.id)
+        return
+
+    flavour = flavours[0]
+
+    print("Found flavour", flavour.id)
+    
+    print("Deploying flavour", flavour.id)
+    
+    flavour = get_flavour(flavour.id)
+    
+    pod = deploy_flavour(flavour, context)
+    return pod
+
+
 @register
 def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
     """Deploy Flavour
@@ -291,8 +318,13 @@ def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
         
     )
 
-    # Track progress of each layer
+    # Track progress of each layer and global GB info
     layer_progress = {}
+    last_update = time.time()
+    current_status = ""
+    status_updates = 5
+    
+    progress(10, "Pulling image")
     for line in docker.api.pull(flavour.image.image_string, stream=True, decode=True):
         if 'id' in line and 'progress' in line:
             # Update progress based on pull status
@@ -301,9 +333,26 @@ def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
                 layer_id = line['id']
                 layer_progress[layer_id] = (progress_detail['current'] / progress_detail['total']) * 100
                 avg_progress = int(sum(layer_progress.values()) / len(layer_progress)) // 2
-                progress(avg_progress, f"Pulling: {line.get('status', '')} - {line.get('progress', '')}")
+                
+                # Extract GB info without progress symbols
+                progress_str = line.get('progress', '')
+                progress_str = progress_str.replace('\[', '').replace('>', '').replace('\]', '').replace('=', '')
+                gb_info = ' '.join(word for word in progress_str.split() if 'GB' in word)
+                
+                current_status = f"Pulling: {line.get('status', '')}"
+                if gb_info:
+                    current_status += f" - {gb_info}"
+                
+                # Only update progress every 10 seconds
+                if time.time() - last_update >= status_updates:
+                    progress(avg_progress, current_status)
+                    last_update = time.time()
+                    
         elif 'status' in line:
-            progress(30, f"Status: {line['status']}")
+            current_status = f"Status: {line['status']}"
+            if time.time() - last_update >= status_updates:
+                progress(30, current_status)
+                last_update = time.time()
 
 
     progress(60, "Pulled image")

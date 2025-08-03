@@ -1851,4 +1851,2025 @@ builds:
     - read
     version: 0.0.9
   selectors: []
-latest_build_run: faab93b6-0b4f-4043-aa85-57b06059a505
+- build_id: 6aa5ff60-8a35-4aad-b9be-1ec185240db5
+  build_run: cd319c81-5686-4c90-a7c6-6bcd9d581e1a
+  description: This is a vanilla flavour
+  flavour: vanilla
+  inspection:
+    implementations:
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          label: pod
+          nullable: false
+          validators: []
+        collections: []
+        description: Refreshes the logs of a pod by getting the logs from the container
+          and updating the logs of the pod.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Refresh Logs
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: refresh_logs
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Restarts a pod by stopping and starting it again.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Restart
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: restart
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Stops a pod by stopping and does not start it again.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Stop
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: stop
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: 'Remove a pod by stopping and removing it.
+
+          This pod will not be able to be started again.'
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Remove
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: remove
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchFlavours($search: String, $values: [ID!]) {\n  options:\
+              \ flavours(\n    filters: {search: $search, ids: $values}\n    pagination:\
+              \ {limit: 10}\n  ) {\n    value: id\n    label: name\n    __typename\n\
+              \  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/flavour'
+          key: flavour
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a specific flavour on the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy Flavour
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy_flavour
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchReleases($search: String, $values: [ID!]) {\n  options:\
+              \ releases(\n    filters: {search: $search, ids: $values}\n    pagination:\
+              \ {limit: 10}\n  ) {\n    value: id\n    label: name\n    __typename\n\
+              \  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/release'
+          key: release
+          kind: STRUCTURE
+          label: release
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a release to the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchDefinitions($search: String, $values: [ID!]) {\n \
+              \ options: definitions(\n    filters: {search: $search, ids: $values}\n\
+              \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+              \    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/definition'
+          key: definition
+          kind: STRUCTURE
+          label: definition
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a definition to the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy_definition
+    requirements:
+    - description: An instance of ArkitektNext kabinet to relate entities
+      key: kabinet
+      optional: false
+      service: live.arkitekt.kabinet
+    - description: An instance of ArkitektNext Lok to authenticate the user
+      key: lok
+      optional: false
+      service: live.arkitekt.lok
+    - description: An instance of ArkitektNext Rekuest to assign to actions
+      key: rekuest
+      optional: false
+      service: live.arkitekt.rekuest
+    - description: An instance of ArkitektNext Lok to authenticate the user
+      key: unlok
+      optional: false
+      service: live.arkitekt.lok
+    size: 505378663
+  manifest:
+    author: jhnnsrs
+    entrypoint: app
+    identifier: deployer
+    scopes:
+    - read
+    version: 0.0.9
+  selectors: []
+- build_id: 1c68135b-bd3b-4fa0-8e1a-0f54c8645c2e
+  build_run: d5e6e6a8-0f84-4b8b-b707-aabe6a2beca5
+  description: This is a vanilla flavour
+  flavour: vanilla
+  inspection:
+    implementations:
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod to refresh the logs for
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          label: pod
+          nullable: false
+          validators: []
+        collections: []
+        description: Refreshes the logs of a pod by getting the logs from the container
+          and updating the logs of the pod.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Refresh Logs
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: refresh_logs
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Restarts a pod by stopping and starting it again.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Restart
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: restart
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Stops a pod by stopping and does not start it again.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Stop
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: stop
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: 'Remove a pod by stopping and removing it.
+
+          This pod will not be able to be started again.'
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Remove
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: remove
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchDefinitions($search: String, $values: [ID!]) {\n \
+              \ options: definitions(\n    filters: {search: $search, ids: $values}\n\
+              \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+              \    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/definition'
+          key: definition
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: No Description
+        interfaces: []
+        isDev: true
+        isTestFor: []
+        kind: FUNCTION
+        name: Auto Install
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: auto_install
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchFlavours($search: String, $values: [ID!]) {\n  options:\
+              \ flavours(\n    filters: {search: $search, ids: $values}\n    pagination:\
+              \ {limit: 10}\n  ) {\n    value: id\n    label: name\n    __typename\n\
+              \  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/flavour'
+          key: flavour
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a specific flavour on the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy Flavour
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod that was deployed
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy_flavour
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchReleases($search: String, $values: [ID!]) {\n  options:\
+              \ releases(\n    filters: {search: $search, ids: $values}\n    pagination:\
+              \ {limit: 10}\n  ) {\n    value: id\n    label: name\n    __typename\n\
+              \  }\n}"
+            ward: kabinet
+          description: The release to deploy
+          effects: []
+          identifier: '@kabinet/release'
+          key: release
+          kind: STRUCTURE
+          label: release
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a release to the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod that was deployed
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchDefinitions($search: String, $values: [ID!]) {\n \
+              \ options: definitions(\n    filters: {search: $search, ids: $values}\n\
+              \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+              \    __typename\n  }\n}"
+            ward: kabinet
+          description: The definition to deploy
+          effects: []
+          identifier: '@kabinet/definition'
+          key: definition
+          kind: STRUCTURE
+          label: definition
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a definition to the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod that was deployed
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy_definition
+    requirements:
+    - description: An instance of ArkitektNext kabinet to relate entities
+      key: kabinet
+      optional: false
+      service: live.arkitekt.kabinet
+    - description: An instance of ArkitektNext Lok to authenticate the user
+      key: lok
+      optional: false
+      service: live.arkitekt.lok
+    - description: An instance of ArkitektNext Rekuest to assign to actions
+      key: rekuest
+      optional: false
+      service: live.arkitekt.rekuest
+    - description: An instance of ArkitektNext Lok to authenticate the user
+      key: unlok
+      optional: false
+      service: live.arkitekt.lok
+    size: 510345004
+  manifest:
+    author: jhnnsrs
+    entrypoint: app
+    identifier: deployer
+    scopes:
+    - read
+    version: 0.0.9
+  selectors: []
+- build_id: 14dd1d89-053a-44b2-8d02-46cc72afd293
+  build_run: 4f1fd43d-ea77-4a37-8e6d-02b7e9fa59ef
+  description: This is a vanilla flavour
+  flavour: vanilla
+  inspection:
+    implementations:
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod to refresh the logs for
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          label: pod
+          nullable: false
+          validators: []
+        collections: []
+        description: Refreshes the logs of a pod by getting the logs from the container
+          and updating the logs of the pod.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Refresh Logs
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: refresh_logs
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Restarts a pod by stopping and starting it again.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Restart
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: restart
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Stops a pod by stopping and does not start it again.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Stop
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: stop
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: 'Remove a pod by stopping and removing it.
+
+          This pod will not be able to be started again.'
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Remove
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: remove
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchDefinitions($search: String, $values: [ID!]) {\n \
+              \ options: definitions(\n    filters: {search: $search, ids: $values}\n\
+              \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+              \    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/definition'
+          key: definition
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: No Description
+        interfaces: []
+        isDev: true
+        isTestFor: []
+        kind: FUNCTION
+        name: Auto Install
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: auto_install
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchFlavours($search: String, $values: [ID!]) {\n  options:\
+              \ flavours(\n    filters: {search: $search, ids: $values}\n    pagination:\
+              \ {limit: 10}\n  ) {\n    value: id\n    label: name\n    __typename\n\
+              \  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/flavour'
+          key: flavour
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a specific flavour on the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy Flavour
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod that was deployed
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy_flavour
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchReleases($search: String, $values: [ID!]) {\n  options:\
+              \ releases(\n    filters: {search: $search, ids: $values}\n    pagination:\
+              \ {limit: 10}\n  ) {\n    value: id\n    label: name\n    __typename\n\
+              \  }\n}"
+            ward: kabinet
+          description: The release to deploy
+          effects: []
+          identifier: '@kabinet/release'
+          key: release
+          kind: STRUCTURE
+          label: release
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a release to the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod that was deployed
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchDefinitions($search: String, $values: [ID!]) {\n \
+              \ options: definitions(\n    filters: {search: $search, ids: $values}\n\
+              \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+              \    __typename\n  }\n}"
+            ward: kabinet
+          description: The definition to deploy
+          effects: []
+          identifier: '@kabinet/definition'
+          key: definition
+          kind: STRUCTURE
+          label: definition
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a definition to the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod that was deployed
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy_definition
+    requirements:
+    - description: An instance of ArkitektNext kabinet to relate entities
+      key: kabinet
+      optional: false
+      service: live.arkitekt.kabinet
+    - description: An instance of ArkitektNext Lok to authenticate the user
+      key: lok
+      optional: false
+      service: live.arkitekt.lok
+    - description: An instance of ArkitektNext Rekuest to assign to actions
+      key: rekuest
+      optional: false
+      service: live.arkitekt.rekuest
+    - description: An instance of ArkitektNext Lok to authenticate the user
+      key: unlok
+      optional: false
+      service: live.arkitekt.lok
+    size: 510384734
+  manifest:
+    author: jhnnsrs
+    entrypoint: app
+    identifier: deployer
+    scopes:
+    - read
+    version: 0.0.9
+  selectors: []
+- build_id: 8af741a9-e57b-464f-959f-a46df76997cc
+  build_run: 5979275d-61d2-478e-8a38-cf1ce0472898
+  description: This is a vanilla flavour
+  flavour: vanilla
+  inspection:
+    implementations:
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod to refresh the logs for
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          label: pod
+          nullable: false
+          validators: []
+        collections: []
+        description: Refreshes the logs of a pod by getting the logs from the container
+          and updating the logs of the pod.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Refresh Logs
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: refresh_logs
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Restarts a pod by stopping and starting it again.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Restart
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: restart
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Stops a pod by stopping and does not start it again.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Stop
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: stop
+    - definition:
+        args:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: pod
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: 'Remove a pod by stopping and removing it.
+
+          This pod will not be able to be started again.'
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Remove
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: remove
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchDefinitions($search: String, $values: [ID!]) {\n \
+              \ options: definitions(\n    filters: {search: $search, ids: $values}\n\
+              \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+              \    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/definition'
+          key: definition
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: No Description
+        interfaces: []
+        isDev: true
+        isTestFor: []
+        kind: FUNCTION
+        name: Auto Install
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: auto_install
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchFlavours($search: String, $values: [ID!]) {\n  options:\
+              \ flavours(\n    filters: {search: $search, ids: $values}\n    pagination:\
+              \ {limit: 10}\n  ) {\n    value: id\n    label: name\n    __typename\n\
+              \  }\n}"
+            ward: kabinet
+          effects: []
+          identifier: '@kabinet/flavour'
+          key: flavour
+          kind: STRUCTURE
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a specific flavour on the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy Flavour
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod that was deployed
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy_flavour
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchReleases($search: String, $values: [ID!]) {\n  options:\
+              \ releases(\n    filters: {search: $search, ids: $values}\n    pagination:\
+              \ {limit: 10}\n  ) {\n    value: id\n    label: name\n    __typename\n\
+              \  }\n}"
+            ward: kabinet
+          description: The release to deploy
+          effects: []
+          identifier: '@kabinet/release'
+          key: release
+          kind: STRUCTURE
+          label: release
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a release to the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod that was deployed
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy
+    - definition:
+        args:
+        - assignWidget:
+            kind: SEARCH
+            query: "query SearchDefinitions($search: String, $values: [ID!]) {\n \
+              \ options: definitions(\n    filters: {search: $search, ids: $values}\n\
+              \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+              \    __typename\n  }\n}"
+            ward: kabinet
+          description: The definition to deploy
+          effects: []
+          identifier: '@kabinet/definition'
+          key: definition
+          kind: STRUCTURE
+          label: definition
+          nullable: false
+          validators: []
+        collections: []
+        description: Deploys a definition to the current docker instance.
+        interfaces: []
+        isDev: false
+        isTestFor: []
+        kind: FUNCTION
+        name: Deploy
+        portGroups: []
+        returns:
+        - assignWidget:
+            filters:
+            - assignWidget:
+                kind: SEARCH
+                query: "query SearchDeployments($search: String, $values: [ID!]) {\n\
+                  \  options: deployments(\n    filters: {search: $search, ids: $values}\n\
+                  \    pagination: {limit: 10}\n  ) {\n    value: id\n    label: name\n\
+                  \    __typename\n  }\n}"
+                ward: kabinet
+              identifier: '@kabinet/deployment'
+              key: deployment
+              kind: STRUCTURE
+              nullable: true
+            kind: SEARCH
+            query: "query SearchPods($search: String, $values: [ID!], $backend: ID)\
+              \ {\n  options: pods(\n    filters: {search: $search, ids: $values,\
+              \ backend: $backend}\n    pagination: {limit: 10}\n  ) {\n    value:\
+              \ id\n    label: name\n    __typename\n  }\n}"
+            ward: kabinet
+          description: The pod that was deployed
+          effects: []
+          identifier: '@kabinet/pod'
+          key: return0
+          kind: STRUCTURE
+          label: return0
+          nullable: false
+          validators: []
+        stateful: false
+      dependencies: []
+      dynamic: false
+      interface: deploy_definition
+    requirements:
+    - description: An instance of ArkitektNext kabinet to relate entities
+      key: kabinet
+      optional: false
+      service: live.arkitekt.kabinet
+    - description: An instance of ArkitektNext Lok to authenticate the user
+      key: lok
+      optional: false
+      service: live.arkitekt.lok
+    - description: An instance of ArkitektNext Rekuest to assign to actions
+      key: rekuest
+      optional: false
+      service: live.arkitekt.rekuest
+    - description: An instance of ArkitektNext Lok to authenticate the user
+      key: unlok
+      optional: false
+      service: live.arkitekt.lok
+    size: 510424464
+  manifest:
+    author: jhnnsrs
+    entrypoint: app
+    identifier: deployer
+    scopes:
+    - read
+    version: 0.1.0
+  selectors: []
+latest_build_run: 5979275d-61d2-478e-8a38-cf1ce0472898

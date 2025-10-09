@@ -4,6 +4,8 @@ RUN pip install docker
 
 RUN pip install "arkitekt-next[all]>=0.23"
 
+RUN pip install kabinet rekuest-next unlok-next rath
+
 RUN mkdir /app
 WORKDIR /app
 COPY .arkitekt_next /app/.arkitekt_next

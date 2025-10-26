@@ -22,20 +22,20 @@
             "always_resolve_interfaces": true,
             "exclude_typenames": true,
             "scalar_definitions": {
-                "NodeHash": "rekuest_next.scalars.NodeHash",
+                "ActionHash": "kabinet.scalars.ActionHash",
                 "uuid": "str",
                 "Callback": "str",
                 "Any": "typing.Any",
                 "AnyInput": "typing.Any",
                 "AnyDefault": "typing.Any",
-                "Args": "rekuest_next.scalars.Args",
-                "ValueMap": "rekuest_next.scalars.ValueMap",
+                "Args": "kabinet.scalars.Args",
+                "ValueMap": "kabinet.scalars.ValueMap",
                 "ID": "rath.scalars.ID",
                 "Arg": "typing.Any",
-                "InstanceId": "rekuest_next.scalars.InstanceId",
-                "Identifier": "rekuest_next.scalars.Identifier",
-                "SearchQuery": "rekuest_next.scalars.SearchQuery",
-                "ValidatorFunction": "rekuest_next.scalars.ValidatorFunction",
+                "InstanceId": "kabinet.scalars.InstanceId",
+                "Identifier": "kabinet.scalars.Identifier",
+                "SearchQuery": "kabinet.scalars.SearchQuery",
+                "ValidatorFunction": "kabinet.scalars.ValidatorFunction",
                 "UntypedParams": "typing.Any"
             },
             "freeze": {
@@ -51,6 +51,7 @@
                 "include_fields": [],
                 "convert_list_to_tuple": true
             },
+            "create_catchall": true,
             "options": {
                 "enabled": true,
                 "extra": "forbid",
@@ -69,6 +70,7 @@
             "additional_bases": {},
             "additional_config": {},
             "force_plugin_order": true,
+            "omited_document_rules": [],
             "parsers": [],
             "plugins": [
                 {
@@ -85,6 +87,9 @@
                 },
                 {
                     "type": "turms.plugins.funcs.FuncsPlugin",
+                    "coercible_scalars": {
+                        "ID": "rath.scalars.IDCoercible"
+                    },
                     "expand_input_types": [
                         "input"
                     ],
@@ -127,6 +132,9 @@
                 }
             ],
             "processors": [
+                {
+                    "type": "turms.processors.disclaimer.DisclaimerProcessor"
+                },
                 {
                     "type": "turms.processors.black.BlackProcessor"
                 }

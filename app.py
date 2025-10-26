@@ -26,6 +26,8 @@ from kabinet.api.schema import (
     create_deployment,
     dump_logs,
     create_pod,
+    aget_pod,
+    my_pod_at,
     delete_pod,
     get_flavour,
     adeclare_resource,
@@ -40,7 +42,8 @@ import rekuest_next
 
 # Connect to local Dockers
 
-ME = os.getenv("INSTANCE_ID", "FAKE GOD")
+
+ME = os.getenv("ME_ID", "FAKE GOD")
 ARKITEKT_GATEWAY = os.getenv("ARKITEKT_GATEWAY", "caddy")
 ARKITEKT_NETWORK = os.getenv("ARKITEKT_NETWORK", "next_default")
 
@@ -72,17 +75,28 @@ class ArkitektContext:
     resources: List[Resource] = field(default_factory=list)
 
 
+# Map Docker container status to PodStatus
+pod_status_mapping = {
+    "created": PodStatus.PENDING,
+    "running": PodStatus.RUNNING,
+    "paused": PodStatus.STOPPED,
+    "restarting": PodStatus.PENDING,
+    "removing": PodStatus.STOPPING,
+    "exited": PodStatus.STOPPED,
+    "dead": PodStatus.FAILED,
+}
+
 @startup
 async def on_startup(instance_id: str) -> ArkitektContext:
     """ A startup function that runs when the actor starts up."""
     print("Starting up")
-    print("Check sfosr scontainers that are no longer pods?")
+    print("Check for containers that are no longer pods?")
 
-    x = await adeclare_backend(instance_id=instance_id, name="Docker", kind="apptainer")
+    x = await adeclare_backend(instance_id=instance_id, name="Docker", kind="docker")
 
     resources = []
     for i in range(1):
-        print("Creating containers")
+        print("Creating Nodes")
         resources.append(
             await adeclare_resource(
                 local_id=f"node_id{i}", backend=x.id, name=f"Node {i}"
@@ -111,7 +125,7 @@ def container_checker(context: ArkitektContext) -> None:
     print("Starting dup")
     print("Check for containers that are dno longer pods?")
 
-    pod_status: Dict[str, PodStatus] = {}
+    pod_status: Dict[str, str] = {}
 
     while True:
         docker = context.docker
@@ -126,30 +140,40 @@ def container_checker(context: ArkitektContext) -> None:
                 my_containers.append(c)
 
         for container in my_containers:
-            try:
-                old_status = pod_status.get(container.id, None)
-                if container.status != old_status:
-                    p = update_pod(
-                        local_id=container.id,
-                        status=(
-                            PodStatus.RUNNING
-                            if container.status == "running"
-                            else PodStatus.STOPPED
-                        ),
-                        instance_id=context.instance_id,
-                    )
+            
 
-                    pod_status[container.id] = container.status
-                    print("Updated Container Status")
+            old_status = pod_status.get(container.id, None)
+            if container.status != old_status:
+                
+                try:
+                    pod = my_pod_at(context.instance_id, container.id)
+                except Exception as e:
+                    print("Error getting pod", e)
+                    print("Container is not a pod anymore, removing", container.id)
+                    container.stop()
+                    container.remove()
+                    continue
+                
+                
+                # Get the appropriate pod status, default to UNKOWN for unmapped statuses
+                new_pod_status = pod_status_mapping.get(container.status, PodStatus.UNKOWN)
+                
+                p = update_pod(
+                    local_id=container.id,
+                    status=new_pod_status,
+                    instance_id=context.instance_id,
+                )
 
+                pod_status[container.id] = container.status
+                print(f"Updated Container Status: {old_status} -> {new_pod_status}")
+
+                try:
                     logs = container.logs(tail=60)
                     dump_logs(p.id, logs.decode("utf-8"))
-            except Exception as e:
-                print("Error updating pod status", e)
-                container.stop()
-                container.remove()
+                except Exception as e:
+                    print("Error getting container logs", e)
 
-        time.sleep(10)
+        time.sleep(5)
 
 
 @register

@@ -1,4 +1,4 @@
-query GetDetailDefinition($definition: ID!) {
+query Get($definition: ID!) {
   definition(id: $definition) {
     id
     flavours {

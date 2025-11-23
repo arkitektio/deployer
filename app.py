@@ -36,10 +36,12 @@ from api.kabinet import  get_detail_definition
 from unlok_next.api.schema import (
     ManifestInput,
     Requirement,
+    PublicSourceKind,
+    PublicSourceInput,
     create_client,
 )
 import rekuest_next
-
+import koil
 # Connect to local Dockers
 
 
@@ -128,6 +130,7 @@ def container_checker(context: ArkitektContext) -> None:
     pod_status: Dict[str, str] = {}
 
     while True:
+        print("Checking containers...")
         docker = context.docker
 
         my_containers = []
@@ -173,7 +176,7 @@ def container_checker(context: ArkitektContext) -> None:
                 except Exception as e:
                     print("Error getting container logs", e)
 
-        time.sleep(5)
+        koil.sleep(5)
 
 
 @register
@@ -333,13 +336,16 @@ def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
     )
 
     client = create_client(
-        manifest=ManifestInput(
+            manifest=ManifestInput(
                 identifier=release.app.identifier,
                 version=release.version,
                 scopes=flavour.manifest["scopes"],
-        ),
-        requirements=[Requirement(**req.model_dump()) for req in flavour.requirements],
-        
+                requirements=[Requirement(**req.model_dump()) for req in flavour.requirements],
+                publicSources=[
+                    PublicSourceInput(kind=PublicSourceKind.GITHUB, url=flavour.repo.url)
+                ]
+            ),
+           
     )
 
     # Track progress of each layer and global GB info
@@ -483,8 +489,12 @@ def deploy(release: Release, context: ArkitektContext) -> Pod:
                 identifier=release.app.identifier,
                 version=release.version,
                 scopes=flavour.manifest["scopes"],
+                requirements=[Requirement(**req.model_dump()) for req in flavour.requirements],
+                publicSources=[
+                    PublicSourceInput(kind=PublicSourceKind.GITHUB, url=flavour.repo.url)
+                ]
             ),
-            requirements=[Requirement(**req.model_dump()) for req in flavour.requirements],
+           
     )
 
     # Track progress of each layer and global GB info

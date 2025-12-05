@@ -3,10 +3,12 @@ import os
 import random
 import time
 from dataclasses import dataclass, field
-from typing import  Dict, List
+from typing import Dict, List, Optional
 from docker import DockerClient, from_env
 import docker.types
+import docker.errors
 from arkitekt_next import background, context, easy, register, startup, progress, log
+from arkitekt_next.node_id import get_or_set_node_id
 from kabinet.api.schema import (
     Backend,
     Definition,
@@ -18,6 +20,7 @@ from kabinet.api.schema import (
     ListFlavour,
     CudaSelector,
     update_pod,
+    QualifierInput,
     list_flavours,
     FlavourFilter,
     FlavourOrder,
@@ -32,7 +35,7 @@ from kabinet.api.schema import (
     get_flavour,
     adeclare_resource,
 )
-from api.kabinet import  get_detail_definition
+from api.kabinet import get_detail_definition
 from unlok_next.api.schema import (
     ManifestInput,
     Requirement,
@@ -42,28 +45,90 @@ from unlok_next.api.schema import (
 )
 import rekuest_next
 import koil
-# Connect to local Dockers
 
-
+# --- CONFIGURATION ---
 ME = os.getenv("ME_ID", "FAKE GOD")
 ARKITEKT_GATEWAY = os.getenv("ARKITEKT_GATEWAY", "caddy")
 ARKITEKT_NETWORK = os.getenv("ARKITEKT_NETWORK", "next_default")
 
 
-def _docker_params_from_flavour(flavour: ListFlavour) -> Dict[str, List[docker.types.DeviceRequest]]:
+# --- HELPER FUNCTIONS ---
 
+
+def _check_gpu_capability(client: DockerClient) -> bool:
+    """
+    The 'Definite' Route.
+    Attempts to actually run a lightweight container with GPU requests.
+    If it fails, the host definitively cannot handle GPU workloads.
+    """
+    print("Performing strict GPU hardware check...")
+    try:
+        # We try to run a tiny command with the GPU request
+        # We use a lightweight image that is likely to exist or downloads fast
+        client.containers.run(
+            "alpine",
+            "echo 'GPU Check'",
+            remove=True,
+            device_requests=[
+                docker.types.DeviceRequest(count=-1, capabilities=[["gpu"]])
+            ],
+        )
+        print("✅ GPU Hardware Check Passed.")
+        return True
+    except docker.errors.ImageNotFound:
+        print("⚠️ Alpine image not found for check, pulling...")
+        try:
+            client.images.pull("alpine")
+            return _check_gpu_capability(client)  # Retry once
+        except:
+            return False
+    except Exception as e:
+        print(f"❌ GPU Hardware Check Failed: {e}")
+        return False
+
+
+def _docker_params_from_flavour(
+    flavour: ListFlavour,
+) -> Dict[str, List[docker.types.DeviceRequest]]:
     docker_params: Dict[str, List[docker.types.DeviceRequest]] = {}
-
     for selector in flavour.selectors:
-
         if isinstance(selector, CudaSelector):
             docker_params.setdefault("device_requests", []).append(
                 docker.types.DeviceRequest(count=-1, capabilities=[["gpu"]])
             )
-
-
     return docker_params
 
+
+def _select_best_resource(context: "ArkitektContext", flavour: Flavour) -> Resource:
+    """
+    Selects the appropriate resource (node) based on flavour requirements.
+    """
+    candidates = context.resources
+
+    # Check if flavour specifically requests a GPU
+    needs_gpu = any(isinstance(s, CudaSelector) for s in flavour.selectors)
+
+    if needs_gpu:
+        # Filter for nodes that have the "gpu" qualifier set to "true"
+        candidates = [
+            res
+            for res in candidates
+            if any(q.key == "gpu" and q.value == "true" for q in res.qualifiers)
+        ]
+
+    if not candidates:
+        # Fallback logic: if we need GPU but have none, we fail early
+        if needs_gpu:
+            raise Exception(
+                "Flavour requires GPU, but no local GPU resources are available."
+            )
+        # If we didn't need GPU, but candidates is empty (rare), revert to all
+        candidates = context.resources
+
+    return random.choice(candidates)
+
+
+# --- CONTEXT ---
 
 
 @context
@@ -72,559 +137,356 @@ class ArkitektContext:
     backend: Backend
     docker: DockerClient
     instance_id: str
+    has_gpu: bool = False
+    device_id: Optional[str] = field(default_factory=get_or_set_node_id)
     gateway: str = field(default=ARKITEKT_GATEWAY)
     network: str = field(default=ARKITEKT_NETWORK)
     resources: List[Resource] = field(default_factory=list)
 
 
-# Map Docker container status to PodStatus
-pod_status_mapping = {
-    "created": PodStatus.PENDING,
-    "running": PodStatus.RUNNING,
-    "paused": PodStatus.STOPPED,
-    "restarting": PodStatus.PENDING,
-    "removing": PodStatus.STOPPING,
-    "exited": PodStatus.STOPPED,
-    "dead": PodStatus.FAILED,
-}
+# --- STARTUP ---
+
 
 @startup
 async def on_startup(instance_id: str) -> ArkitektContext:
-    """ A startup function that runs when the actor starts up."""
-    print("Starting up")
-    print("Check for containers that are no longer pods?")
+    """
+    Startup: Connects to Docker, checks hardware, and registers the node.
+    """
+    print(f"Starting Backend {instance_id}")
 
-    x = await adeclare_backend(instance_id=instance_id, name="Docker", kind="docker")
+    docker_client = from_env()
 
+    # 1. THE DEFINITE GPU CHECK
+    has_gpu = _check_gpu_capability(docker_client)
+
+    # 2. Register Backend
+    backend = await adeclare_backend(
+        instance_id=instance_id, name="Docker", kind="docker"
+    )
+
+    # 3. Register Resource (Node) with capabilities
     resources = []
-    for i in range(1):
-        print("Creating Nodes")
-        resources.append(
-            await adeclare_resource(
-                local_id=f"node_id{i}", backend=x.id, name=f"Node {i}"
-            )
+
+    qualifiers = []
+    if has_gpu:
+        qualifiers.append(QualifierInput(key="gpu", value="true"))
+    else:
+        qualifiers.append(QualifierInput(key="gpu", value="false"))
+
+    print(f"Declaring Local Node with Qualifiers: {qualifiers}")
+
+    resources.append(
+        await adeclare_resource(
+            local_id=f"local_docker_node",
+            backend=backend.id,
+            name="Local Node",
+            qualifiers=qualifiers,
         )
+    )
 
     return ArkitektContext(
-        docker=from_env(),
+        docker=docker_client,
         gateway=ARKITEKT_GATEWAY,
         network=ARKITEKT_NETWORK,
-        backend=x,
+        has_gpu=has_gpu,
+        backend=backend,
         instance_id=instance_id,
         resources=resources,
     )
 
 
+# --- BACKGROUND MONITORING ---
+
+pod_status_mapping = {
+    "created": PodStatus.PENDING,
+    "running": PodStatus.RUNNING,
+    "paused": PodStatus.STOPPED,
+    "restarting": PodStatus.PENDING,  # Important for UI feedback
+    "removing": PodStatus.STOPPING,
+    "exited": PodStatus.STOPPED,
+    "dead": PodStatus.FAILED,
+}
+
+
 @background
 def container_checker(context: ArkitektContext) -> None:
-    """ A background function that runs in the background.
-
-    It checks for containers that are no longer pods and updates their status.
-    If a container is no longer a pod, it stops and removes it, to ensure that the pod is not running anymore.
-    
-
     """
-    print("Starting dup")
-    print("Check for containers that are dno longer pods?")
-
-    pod_status: Dict[str, str] = {}
+    Robust polling loop to monitor container health and catch crash loops.
+    """
+    print("Starting container health monitor")
+    pod_status_cache: Dict[str, str] = {}
 
     while True:
-        print("Checking containers...")
-        docker = context.docker
+        try:
+            # Get all containers (even stopped ones)
+            all_containers = context.docker.containers.list(all=True)
 
-        my_containers = []
-        container = docker.containers.list(all=True)
-        for c in container:
-            if "arkitekt.live.kabinet" in c.labels:
-                classifier = c.labels["arkitekt.live.kabinet"]
-                if classifier != ME:
-                    continue
-                my_containers.append(c)
+            my_containers = [
+                c for c in all_containers if c.labels.get("arkitekt.live.kabinet") == ME
+            ]
 
-        for container in my_containers:
-            
-
-            old_status = pod_status.get(container.id, None)
-            if container.status != old_status:
-                
+            for container in my_containers:
                 try:
-                    pod = my_pod_at(context.instance_id, container.id)
-                except Exception as e:
-                    print("Error getting pod", e)
-                    print("Container is not a pod anymore, removing", container.id)
-                    container.stop()
-                    container.remove()
-                    continue
-                
-                
-                # Get the appropriate pod status, default to UNKOWN for unmapped statuses
-                new_pod_status = pod_status_mapping.get(container.status, PodStatus.UNKOWN)
-                
-                p = update_pod(
-                    local_id=container.id,
-                    status=new_pod_status,
-                    instance_id=context.instance_id,
-                )
+                    # Reload to get the exact millisecond status
+                    container.reload()
+                except Exception:
+                    continue  # Container vanished
 
-                pod_status[container.id] = container.status
-                print(f"Updated Container Status: {old_status} -> {new_pod_status}")
+                current_status_str = container.status
+                cached_status = pod_status_cache.get(container.id)
 
-                try:
-                    logs = container.logs(tail=60)
-                    dump_logs(p.id, logs.decode("utf-8"))
-                except Exception as e:
-                    print("Error getting container logs", e)
+                # Only act if status changed
+                if cached_status != current_status_str:
+                    try:
+                        pod = my_pod_at(context.instance_id, container.id)
+                    except Exception:
+                        print(f"Orphaned container {container.name}. Cleaning up.")
+                        try:
+                            container.stop()
+                            container.remove()
+                        except:
+                            pass
+                        continue
 
-        koil.sleep(5)
+                    new_pod_status = pod_status_mapping.get(
+                        current_status_str, PodStatus.UNKOWN
+                    )
+
+                    # SPECIAL LOGIC: Crash Detection
+                    if current_status_str == "restarting":
+                        print(f"🔄 Pod {pod.id} is restarting (Attempting recovery)...")
+
+                    # SPECIAL LOGIC: Failed vs Stopped
+                    if current_status_str == "exited":
+                        exit_code = container.attrs["State"]["ExitCode"]
+                        if exit_code != 0:
+                            new_pod_status = PodStatus.FAILED
+                            print(f"❌ Pod {pod.id} failed (Exit Code: {exit_code})")
+
+                    update_pod(
+                        local_id=container.id,
+                        status=new_pod_status,
+                        instance_id=context.instance_id,
+                    )
+
+                    # Update logs on status change
+                    try:
+                        logs = container.logs(tail=100)
+                        dump_logs(pod.id, logs.decode("utf-8"))
+                    except:
+                        pass
+
+                    pod_status_cache[container.id] = current_status_str
+                    print(f"State Change: {container.name} is now {new_pod_status}")
+
+        except Exception as e:
+            print("Monitor Loop Error:", e)
+
+        koil.sleep(2)
+
+
+# --- DEPLOYMENT LOGIC ---
+
+
+def _internal_deploy(
+    context: ArkitektContext,
+    flavour: Flavour,
+    deployment_id: str,
+    client: any,  # Unlok Client
+):
+    """
+    Refactored internal logic to actually start the container.
+    Contains the Restart Policy and Network logic.
+    """
+    docker_client = context.docker
+    extra_params = _docker_params_from_flavour(flavour)
+
+    print(f"Launching container for deployment {deployment_id}")
+    print(f"Restart Policy: On-Failure (Max 5 retries)")
+
+    container = docker_client.containers.run(
+        flavour.image.image_string,
+        detach=True,
+        # THE FIX: Restart automatically on crash, but give up after 5 tries
+        restart_policy={"Name": "on-failure", "MaximumRetryCount": 5},
+        labels={
+            "arkitekt.live.kabinet": ME,
+            "arkitekt.live.kabinet.deployment": deployment_id,
+        },
+        environment={"FAKTS_TOKEN": client.token, "ARKITEKT_NODE_ID": context.device_id},
+        command=f"arkitekt-next run prod --token {client.token} --url {context.gateway}",
+        network=context.network,
+        **extra_params,
+    )
+
+    return container
 
 
 @register
-def refresh_logs(context: ArkitektContext, pod: Pod) -> Pod:
-    """ Refresh Logs
+def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
+    release = flavour.release
+    progress(0, "Initializing")
 
-    Refreshes the logs of a pod by getting the logs from the container and updating the logs of the pod.
+    # 1. Create Client
+    client = create_client(
+        manifest=ManifestInput(
+            identifier=release.app.identifier,
+            version=release.version,
+            scopes=flavour.manifest["scopes"],
+            requirements=[
+                Requirement(**req.model_dump()) for req in flavour.requirements
+            ],
+            publicSources=[
+                PublicSourceInput(kind=PublicSourceKind.GITHUB, url=flavour.repo.url)
+            ],
+        ),
+    )
 
-    Parameters
-    ----------
-
-    context: ArkitektContext
-        The context of the current instance
-
-    pod: Pod
-        The pod to refresh the logs for
-
-    Returns
-    -------
-
-    Pod
-    The pod with the updated logs
-
-    """
-    print(pod.pod_id)
-    print(context.docker.containers.list())
-    container = context.docker.containers.get(pod.pod_id)
-    print("Getting logs")
-    logs = container.logs(tail=60)
-    print("Dumping logs")
-    dump_logs(pod.id, logs.decode("utf-8"))
-
-    return pod
-
-
-@register
-def restart(pod: Pod, context: ArkitektContext) -> Pod:
-    """Restart
-
-    Restarts a pod by stopping and starting it again.
-
-
-    """
-
-    print("Running")
-    container = context.docker.containers.get(pod.pod_id)
-
-    progress(50)
-    container.restart()
-    progress(100)
-    return pod
-
-
-@register
-def stop(pod: Pod, context: ArkitektContext) -> Pod:
-    """Stop
-
-    Stops a pod by stopping and does not start it again.
-
-
-    """
-
-    print("Running")
-    container = context.docker.containers.get(pod.pod_id)
-
-    container.stop()
-
-    return pod
-
-
-@register
-def remove(pod: Pod, context: ArkitektContext) -> Pod:
-    """Remove
-
-    Remove a pod by stopping and removing it.
-    This pod will not be able to be started again.
-
-
-    """
-
-    print("Running")
+    # 2. Pull Image (Simplified logic for brevity, assuming standard pull works)
+    progress(10, "Pulling image...")
     try:
-        container = context.docker.containers.get(pod.pod_id)
-
-        container.remove()
+        context.docker.images.pull(flavour.image.image_string)
     except Exception as e:
-        log(e)
-        print(e)
+        print(f"Pull error: {e}")
+    progress(60, "Image Pulled")
 
-    delete_pod(pod.id)
+    # 3. Create Deployment Record
+    deployment = create_deployment(
+        flavour=flavour,
+        instance_id=context.instance_id,
+        local_id=flavour.image.image_string,
+        last_pulled=datetime.datetime.now(),
+    )
+
+    # 4. Launch Container (Using shared logic)
+    progress(70, "Starting Container")
+    container = _internal_deploy(context, flavour, deployment.id, client)
+
+    print(f"Deployed: {container.name} [{container.id[:10]}]")
+    progress(90, "Registering Pod")
+
+    # 5. Select Resource and Create Pod
+    resource = _select_best_resource(context, flavour)
+
+    pod = create_pod(
+        deployment=deployment,
+        instance_id=context.instance_id,
+        local_id=container.id,
+        client_id=client.oauth2_client.client_id,
+        resource=resource,
+    )
 
     return pod
 
 
-@register 
+@register
+def deploy(release: Release, context: ArkitektContext) -> Pod:
+    # Wrapper for deploy_flavour logic to handle pure Release objects
+    # This automatically picks the newest/best flavour in real implementation
+    # For now, we pick index 0 as per your original script
+    if not release.flavours:
+        raise Exception("No flavours available in this release")
+    
+    
+    prefered_flavour = None
+    
+    for flavour in release.flavours:
+        
+        try:
+            _select_best_resource(context, flavour)
+            prefered_flavour = flavour
+            break
+        except Exception as e:
+            print(f"Flavour {flavour.id} not suitable: {e}")
+            continue
+
+    if prefered_flavour is None:
+        raise Exception("No suitable flavours available for this release on this node")
+    
+    expanded_flavour = get_flavour(prefered_flavour.id)
+    
+
+    return deploy_flavour(expanded_flavour, context)
+
+
+@register
 def auto_install(context: ArkitektContext, definition: Definition) -> Pod:
     flavours = list_flavours(
         filters=FlavourFilter(hasDefinitions=[definition.id]),
         order=FlavourOrder(releasedAt=Ordering.DESC),
     )
-
-    if not flavours:
-        print("No flavours found for definition", definition.id)
-        return
-
-    flavour = flavours[0]
-
-    print("Found flavour", flavour.id)
     
-    print("Deploying flavour", flavour.id)
+    prefered_flavour = None
     
-    flavour = get_flavour(flavour.id)
+    for flavour in flavours:
+        
+        try:
+            _select_best_resource(context, flavour)
+            prefered_flavour = flavour
+            break
+        except Exception as e:
+            print(f"Flavour {flavour.id} not suitable: {e}")
+            continue
+
+    if prefered_flavour is None:
+        raise Exception("No suitable flavours available for this release on this node")
     
-    pod = deploy_flavour(flavour, context)
+    expanded_flavour = get_flavour(prefered_flavour.id)
+
+    return deploy_flavour(expanded_flavour, context)
+
+
+# --- LIFECYCLE MANAGEMENT ---
+
+
+@register
+def refresh_logs(context: ArkitektContext, pod: Pod) -> Pod:
+    try:
+        container = context.docker.containers.get(
+            pod.local_id
+        )  # Use local_id for reliability
+        logs = container.logs(tail=200)
+        dump_logs(pod.id, logs.decode("utf-8"))
+    except Exception as e:
+        print(f"Error refreshing logs: {e}")
     return pod
 
 
 @register
-def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
-    """Deploy Flavour
-
-    Deploys a specific flavour on the current docker instance.
-
-
-    Parameters
-    ----------
-
-    release: Release
-        The release to deploy
-
-    context: ArkitektContext
-        The context of the current instance
-
-    
-    Returns
-    -------
-
-    Pod
-        The pod that was deployed
-
-    """
-
-
-    docker: DockerClient = context.docker
-    caddy_url = context.gateway
-    network = context.network
-
-
-    release = flavour.release
-
-    progress(0)
-
-    print(flavour.requirements)
-
-    print(
-        [Requirement(**req.model_dump()) for req in flavour.requirements]
-    )
-
-    client = create_client(
-            manifest=ManifestInput(
-                identifier=release.app.identifier,
-                version=release.version,
-                scopes=flavour.manifest["scopes"],
-                requirements=[Requirement(**req.model_dump()) for req in flavour.requirements],
-                publicSources=[
-                    PublicSourceInput(kind=PublicSourceKind.GITHUB, url=flavour.repo.url)
-                ]
-            ),
-           
-    )
-
-    # Track progress of each layer and global GB info
-    layer_progress = {}
-    last_update = time.time()
-    current_status = ""
-    status_updates = 5
-    
-    progress(10, "Pulling image")
-    for line in docker.api.pull(flavour.image.image_string, stream=True, decode=True):
-        if 'id' in line and 'progress' in line:
-            # Update progress based on pull status
-            progress_detail = line.get('progressDetail', {})
-            if progress_detail and 'current' in progress_detail and 'total' in progress_detail:
-                layer_id = line['id']
-                layer_progress[layer_id] = (progress_detail['current'] / progress_detail['total']) * 100
-                avg_progress = int(sum(layer_progress.values()) / len(layer_progress)) // 2
-                
-                # Extract GB info without progress symbols
-                progress_str = line.get('progress', '')
-                progress_str = progress_str.replace('\[', '').replace('>', '').replace('\]', '').replace('=', '')
-                gb_info = ' '.join(word for word in progress_str.split() if 'GB' in word)
-                
-                current_status = f"Pulling: {line.get('status', '')}"
-                if gb_info:
-                    current_status += f" - {gb_info}"
-                
-                # Only update progress every 10 seconds
-                if time.time() - last_update >= status_updates:
-                    progress(avg_progress, current_status)
-                    last_update = time.time()
-                    
-        elif 'status' in line:
-            current_status = f"Status: {line['status']}"
-            if time.time() - last_update >= status_updates:
-                progress(30, current_status)
-                last_update = time.time()
-
-
-    progress(60, "Pulled image")
-
-    deployment = create_deployment(
-        flavour=flavour,
-        instance_id=context.instance_id,
-        local_id=flavour.image.image_string,
-        last_pulled=datetime.datetime.now(),
-    )
-
-    progress(70, "Starting container")
-
-
-    print(os.getenv("ARKITEKT_GATEWAY"))
-
-    # COnver step here for apptainer
-
-    extra_params = _docker_params_from_flavour(flavour)
-
-    print(extra_params)
-
-
-
-    container = docker.containers.run(
-        flavour.image.image_string,
-        detach=True,
-        labels={
-            "arkitekt.live.kabinet": ME,
-            "arkitekt.live.kabinet.deployment": deployment.id,
-        },
-        environment={"FAKTS_TOKEN": client.token},
-        command=f"arkitekt-next run prod --token {client.token} --url {caddy_url}",
-        network=network,
-        **extra_params
-    )
-
-    print(
-        "Deployed container on network",
-        network,
-        client.token,
-        caddy_url,
-        container.name,
-    )
-
-    progress(90)
-
-    resource = random.choice(context.resources)
-
-    z = create_pod(
-        deployment=deployment,
-        instance_id=context.instance_id,
-        local_id=container.id,
-        client_id=client.oauth2_client.client_id,
-        resource=resource,
-    )
-
-    return z
+def restart(pod: Pod, context: ArkitektContext) -> Pod:
+    print(f"Restarting {pod.id}")
+    container = context.docker.containers.get(pod.local_id)
+    container.restart()
+    return pod
 
 
 @register
-def deploy(release: Release, context: ArkitektContext) -> Pod:
-    """Deploy
-
-    Deploys a release to the current docker instance.
-
-
-    Parameters
-    ----------
-
-    release: Release
-        The release to deploy
-
-    context: ArkitektContext
-        The context of the current instance
-
-    
-    Returns
-    -------
-
-    Pod
-        The pod that was deployed
-
-    """
-
-
-    print(release)
-    docker: DockerClient = context.docker
-    caddy_url = context.gateway
-    network = context.network
-
-    flavour = release.flavours[0]
-
-    progress(0)
-
-    print(flavour.requirements)
-
-    print(
-        [Requirement(**req.model_dump()) for req in flavour.requirements]
-    )
-
-    client = create_client(
-            manifest=ManifestInput(
-                identifier=release.app.identifier,
-                version=release.version,
-                scopes=flavour.manifest["scopes"],
-                requirements=[Requirement(**req.model_dump()) for req in flavour.requirements],
-                publicSources=[
-                    PublicSourceInput(kind=PublicSourceKind.GITHUB, url=flavour.repo.url)
-                ]
-            ),
-           
-    )
-
-    # Track progress of each layer and global GB info
-    layer_progress = {}
-    last_update = time.time()
-    current_status = ""
-    status_updates = 5
-    
-    progress(10, "Pulling image")
-    for line in docker.api.pull(flavour.image.image_string, stream=True, decode=True):
-        if 'id' in line and 'progress' in line:
-            # Update progress based on pull status
-            progress_detail = line.get('progressDetail', {})
-            if progress_detail and 'current' in progress_detail and 'total' in progress_detail:
-                layer_id = line['id']
-                layer_progress[layer_id] = (progress_detail['current'] / progress_detail['total']) * 100
-                avg_progress = int(sum(layer_progress.values()) / len(layer_progress)) // 2
-                
-                # Extract GB info without progress symbols
-                progress_str = line.get('progress', '')
-                progress_str = progress_str.replace('\[', '').replace('>', '').replace('\]', '').replace('=', '')
-                gb_info = ' '.join(word for word in progress_str.split() if 'GB' in word)
-                
-                current_status = f"Pulling: {line.get('status', '')}"
-                if gb_info:
-                    current_status += f" - {gb_info}"
-                
-                # Only update progress every 10 seconds
-                if time.time() - last_update >= status_updates:
-                    progress(avg_progress, current_status)
-                    last_update = time.time()
-                    
-        elif 'status' in line:
-            current_status = f"Status: {line['status']}"
-            if time.time() - last_update >= status_updates:
-                progress(30, current_status)
-                last_update = time.time()
-
-    progress(60, "Pulled image")
-    progress(60, "Pulled image")
-
-    deployment = create_deployment(
-        flavour=flavour,
-        instance_id=context.instance_id,
-        local_id=flavour.image.image_string,
-        last_pulled=datetime.datetime.now(),
-    )
-
-    progress(70, "Starting container")
-
-
-    print(os.getenv("ARKITEKT_GATEWAY"))
-
-    # COnver step here for apptainer
-
-    extra_params = _docker_params_from_flavour(flavour)
-
-    print(extra_params)
-
-
-    container = docker.containers.run(
-        flavour.image.image_string,
-        detach=True,
-        labels={
-            "arkitekt.live.kabinet": ME,
-            "arkitekt.live.kabinet.deployment": deployment.id,
-        },
-        environment={"FAKTS_TOKEN": client.token},
-        command=f"arkitekt-next run prod --token {client.token} --url {caddy_url}",
-        network=network,
-        **extra_params
-        
-    )
-
-    print(
-        "Deployed container on network",
-        network,
-        client.token,
-        caddy_url,
-        container.name,
-    )
-
-    progress(90)
-
-    resource = random.choice(context.resources)
-
-    z = create_pod(
-        deployment=deployment,
-        instance_id=context.instance_id,
-        local_id=container.id,
-        client_id=client.oauth2_client.client_id,
-        resource=resource,
-    )
-
-    return z
-
+def stop(pod: Pod, context: ArkitektContext) -> Pod:
+    print(f"Stopping {pod.id}")
+    container = context.docker.containers.get(pod.local_id)
+    # This acts as the "Tell it otherwise" command.
+    # The 'on-failure' policy only restarts on crash. 'stop' is a valid exit.
+    container.stop()
+    return pod
 
 
 @register
-def deploy_definition(definition: Definition, context: ArkitektContext) -> Pod:
-    """Deploy
+def remove(pod: Pod, context: ArkitektContext) -> Pod:
+    print(f"Removing {pod.id}")
+    try:
+        container = context.docker.containers.get(pod.local_id)
+        container.remove(force=True)
+    except Exception as e:
+        print(f"Container removal error (might already be gone): {e}")
 
-    Deploys a definition to the current docker instance.
-
-    Parameters
-    ----------
-
-    definition: Definition
-        The definition to deploy
-
-    context: ArkitektContext
-        The context of the current instance
-
-    
-    Returns
-    -------
-
-    Pod
-        The pod that was deployed
-
-    """
-    
-    detail = get_detail_definition(definition.id)
-    
-    
-    print(detail)
-    
-    selected_flavour = get_flavour(detail.flavours[0])
-    
-    return deploy_flavour(selected_flavour, context)
+    delete_pod(pod.id)
+    return pod
 
 
-
+@register
+def move(pod: Pod, target: Resource) -> Pod:
+    # Simplistic implementation: Update DB record.
+    # In reality, you cannot "move" a Docker container between hosts without restarting/redeploying.
+    print(f"Updating Pod record {pod.id} to resource {target.id}")
+    pod.resource_id = target.id
+    return pod

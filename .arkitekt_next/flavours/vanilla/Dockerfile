@@ -1,8 +1,7 @@
-FROM python:3.11-slim-buster
-
+FROM python:3.12
 RUN pip install docker
 
-RUN pip install "arkitekt-next[all]>=0.35"
+RUN pip install "arkitekt-next[all]>=0.39.2"
 
 RUN mkdir /app
 WORKDIR /app

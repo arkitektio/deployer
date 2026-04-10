@@ -35,20 +35,20 @@ from kabinet.api.schema import (
     get_flavour,
     adeclare_resource,
 )
-from api.kabinet import get_detail_definition
 from unlok_next.api.schema import (
     ManifestInput,
-    Requirement,
+    RequirementInput,
     PublicSourceKind,
     PublicSourceInput,
     create_client,
+    DetailClient,
 )
 import rekuest_next
 import koil
 
 # --- CONFIGURATION ---
 ME = os.getenv("ME_ID", "FAKE GOD")
-ARKITEKT_GATEWAY = os.getenv("ARKITEKT_GATEWAY", "caddy")
+ARKITEKT_GATEWAY = os.getenv("ARKITEKT_GATEWAY", "go.arkitekt.live")
 ARKITEKT_NETWORK = os.getenv("ARKITEKT_NETWORK", "next_default")
 
 
@@ -148,13 +148,13 @@ class ArkitektContext:
 
 
 @startup
-async def on_startup(instance_id: str) -> ArkitektContext:
+async def on_startup() -> ArkitektContext:
     """
     Startup: Connects to Docker, checks hardware, and registers the node.
     """
-    print(f"Starting Backend {instance_id}")
 
     docker_client = from_env()
+    instance_id = "default"
 
     # 1. THE DEFINITE GPU CHECK
     has_gpu = _check_gpu_capability(docker_client)
@@ -292,7 +292,7 @@ def _internal_deploy(
     context: ArkitektContext,
     flavour: Flavour,
     deployment_id: str,
-    client: any,  # Unlok Client
+    client: DetailClient,  # Unlok Client
 ):
     """
     Refactored internal logic to actually start the container.
@@ -313,7 +313,10 @@ def _internal_deploy(
             "arkitekt.live.kabinet": ME,
             "arkitekt.live.kabinet.deployment": deployment_id,
         },
-        environment={"FAKTS_TOKEN": client.token, "ARKITEKT_NODE_ID": context.device_id},
+        environment={
+            "FAKTS_TOKEN": client.token,
+            "ARKITEKT_NODE_ID": context.device_id,
+        },
         command=f"arkitekt-next run prod --token {client.token} --url {context.gateway}",
         network=context.network,
         **extra_params,
@@ -334,18 +337,27 @@ def deploy_flavour(flavour: Flavour, context: ArkitektContext) -> Pod:
             version=release.version,
             scopes=flavour.manifest["scopes"],
             requirements=[
-                Requirement(**req.model_dump()) for req in flavour.requirements
+                RequirementInput(**req.model_dump())
+                for req in flavour.requirements  # TODO: The serialization here is a bit annoying
             ],
             publicSources=[
-                PublicSourceInput(kind=PublicSourceKind.GITHUB, url=flavour.repo.url)
+                PublicSourceInput(
+                    kind=PublicSourceKind.GITHUB, url=flavour.repo.url
+                )  # As currently only github is supported
             ],
+            node_id=context.device_id,  # the deployed app will share the same node_id as the host (as it might spawn on different pods)
         ),
     )
+    
+    
+    print(f"Client created for {release.app.identifier}:{release.version} with scopes {flavour.manifest['scopes']}")
 
     # 2. Pull Image (Simplified logic for brevity, assuming standard pull works)
     progress(10, "Pulling image...")
     try:
-        context.docker.images.pull(flavour.image.image_string)
+        context.docker.images.pull(
+            flavour.image.image_string
+        )  # Pull the image (maybe print progress in real implementation)
     except Exception as e:
         print(f"Pull error: {e}")
     progress(60, "Image Pulled")
@@ -386,12 +398,10 @@ def deploy(release: Release, context: ArkitektContext) -> Pod:
     # For now, we pick index 0 as per your original script
     if not release.flavours:
         raise Exception("No flavours available in this release")
-    
-    
+
     prefered_flavour = None
-    
+
     for flavour in release.flavours:
-        
         try:
             _select_best_resource(context, flavour)
             prefered_flavour = flavour
@@ -402,9 +412,8 @@ def deploy(release: Release, context: ArkitektContext) -> Pod:
 
     if prefered_flavour is None:
         raise Exception("No suitable flavours available for this release on this node")
-    
+
     expanded_flavour = get_flavour(prefered_flavour.id)
-    
 
     return deploy_flavour(expanded_flavour, context)
 
@@ -415,11 +424,10 @@ def auto_install(context: ArkitektContext, definition: Definition) -> Pod:
         filters=FlavourFilter(hasDefinitions=[definition.id]),
         order=FlavourOrder(releasedAt=Ordering.DESC),
     )
-    
+
     prefered_flavour = None
-    
+
     for flavour in flavours:
-        
         try:
             _select_best_resource(context, flavour)
             prefered_flavour = flavour
@@ -430,7 +438,7 @@ def auto_install(context: ArkitektContext, definition: Definition) -> Pod:
 
     if prefered_flavour is None:
         raise Exception("No suitable flavours available for this release on this node")
-    
+
     expanded_flavour = get_flavour(prefered_flavour.id)
 
     return deploy_flavour(expanded_flavour, context)
@@ -455,7 +463,7 @@ def refresh_logs(context: ArkitektContext, pod: Pod) -> Pod:
 @register
 def restart(pod: Pod, context: ArkitektContext) -> Pod:
     print(f"Restarting {pod.id}")
-    container = context.docker.containers.get(pod.local_id)
+    container = context.docker.containers.get(pod.pod_id)
     container.restart()
     return pod
 
@@ -463,7 +471,7 @@ def restart(pod: Pod, context: ArkitektContext) -> Pod:
 @register
 def stop(pod: Pod, context: ArkitektContext) -> Pod:
     print(f"Stopping {pod.id}")
-    container = context.docker.containers.get(pod.local_id)
+    container = context.docker.containers.get(pod.pod_id)
     # This acts as the "Tell it otherwise" command.
     # The 'on-failure' policy only restarts on crash. 'stop' is a valid exit.
     container.stop()
@@ -474,7 +482,7 @@ def stop(pod: Pod, context: ArkitektContext) -> Pod:
 def remove(pod: Pod, context: ArkitektContext) -> Pod:
     print(f"Removing {pod.id}")
     try:
-        container = context.docker.containers.get(pod.local_id)
+        container = context.docker.containers.get(pod.pod_id)
         container.remove(force=True)
     except Exception as e:
         print(f"Container removal error (might already be gone): {e}")

@@ -1,7 +1,7 @@
 FROM python:3.12
 RUN pip install docker
 
-RUN pip install "arkitekt-next[all]>=0.39.2"
+RUN pip install "arkitekt-next[all]>=0.39.5"
 
 RUN mkdir /app
 WORKDIR /app

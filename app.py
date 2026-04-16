@@ -110,10 +110,11 @@ def _select_best_resource(context: "ArkitektContext", flavour: Flavour) -> Resou
 
     if needs_gpu:
         # Filter for nodes that have the "gpu" qualifier set to "true"
+        print([res.qualifiers for res in candidates])
         candidates = [
             res
             for res in candidates
-            if any(q.key == "gpu" and q.value == "true" for q in res.qualifiers)
+            if any(q["key"] == "gpu" and q["value"] == "true" for q in res.qualifiers)
         ]
 
     if not candidates:
@@ -398,20 +399,7 @@ def deploy(release: Release, context: ArkitektContext) -> Pod:
     # For now, we pick index 0 as per your original script
     if not release.flavours:
         raise Exception("No flavours available in this release")
-
-    prefered_flavour = None
-
-    for flavour in release.flavours:
-        try:
-            _select_best_resource(context, flavour)
-            prefered_flavour = flavour
-            break
-        except Exception as e:
-            print(f"Flavour {flavour.id} not suitable: {e}")
-            continue
-
-    if prefered_flavour is None:
-        raise Exception("No suitable flavours available for this release on this node")
+    prefered_flavour = release.flavours[0]
 
     expanded_flavour = get_flavour(prefered_flavour.id)
 
